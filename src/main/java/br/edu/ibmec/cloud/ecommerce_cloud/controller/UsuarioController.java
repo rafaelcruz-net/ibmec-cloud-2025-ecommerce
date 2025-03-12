@@ -5,10 +5,7 @@ import br.edu.ibmec.cloud.ecommerce_cloud.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +26,29 @@ public class UsuarioController {
     @GetMapping("{id}")
     public ResponseEntity<Usuario> getById(@PathVariable Integer id) {
         Optional<Usuario> response = this.repository.findById(id);
-
         if (response.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         return new ResponseEntity<>(response.get() ,HttpStatus.OK);
-
     }
+
+    @PostMapping
+    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario){
+        this.repository.save(usuario);
+        return new ResponseEntity<>(usuario ,HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Usuario> delete(@PathVariable Integer id) {
+        Optional<Usuario> response = this.repository.findById(id);
+        if (response.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        //Exclui o usuario da base
+        this.repository.delete(response.get());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
 }

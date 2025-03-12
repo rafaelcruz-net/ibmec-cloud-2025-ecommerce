@@ -1,16 +1,16 @@
 package br.edu.ibmec.cloud.ecommerce_cloud.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity(name = "usuario")
 public class Usuario {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column
@@ -27,4 +27,8 @@ public class Usuario {
 
     @Column
     private String telefone;
+
+    @OneToMany
+    @JoinColumn(referencedColumnName = "id", name = "id_usuario")
+    private List<Cartao> cartoes;
 }

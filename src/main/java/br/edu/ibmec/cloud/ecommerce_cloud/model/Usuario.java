@@ -31,4 +31,10 @@ public class Usuario {
     @OneToMany
     @JoinColumn(referencedColumnName = "id", name = "id_usuario")
     private List<Cartao> cartoes;
+
+    @OneToMany
+    @JoinColumn(referencedColumnName = "id", name = "id_usuario")
+    private List<Endereco> enderecos;
+
+
 }

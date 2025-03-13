@@ -4,11 +4,18 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Entity(name = "usuario")
 public class Usuario {
+
+    public Usuario() {
+        this.cartoes = new ArrayList<>();
+        this.enderecos = new ArrayList<>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

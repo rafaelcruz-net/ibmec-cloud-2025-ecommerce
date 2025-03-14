@@ -1,7 +1,5 @@
 package br.edu.ibmec.cloud.ecommerce_cloud.model;
 
-
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 

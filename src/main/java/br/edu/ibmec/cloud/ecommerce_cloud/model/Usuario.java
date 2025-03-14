@@ -1,20 +1,30 @@
 package br.edu.ibmec.cloud.ecommerce_cloud.model;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity(name = "usuario")
 public class Usuario {
+
+    public Usuario() {
+        this.cartoes = new ArrayList<>();
+        this.enderecos = new ArrayList<>();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Column
     private String nome;
+
+    @Column
+    private String email;
 
     @Column
     private LocalDateTime dtNascimento;
@@ -23,7 +33,7 @@ public class Usuario {
     private String cpf;
 
     @Column
-    private String email;
+    private String telefone;
 
     @OneToMany
     @JoinColumn(referencedColumnName = "id", name = "id_usuario")
@@ -32,4 +42,6 @@ public class Usuario {
     @OneToMany
     @JoinColumn(referencedColumnName = "id", name = "id_usuario")
     private List<Endereco> enderecos;
+
+
 }

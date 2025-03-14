@@ -1,88 +1,56 @@
 package br.edu.ibmec.cloud.ecommerce_cloud.controller;
 
-import br.edu.ibmec.cloud.ecommerce_cloud.model.Cartao;
-import br.edu.ibmec.cloud.ecommerce_cloud.model.Endereco;
-import br.edu.ibmec.cloud.ecommerce_cloud.repository.CartaoRepository;
-import br.edu.ibmec.cloud.ecommerce_cloud.repository.EnderecoRepository;
-import org.apache.catalina.User;
+import br.edu.ibmec.cloud.ecommerce_cloud.model.Usuario;
+import br.edu.ibmec.cloud.ecommerce_cloud.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.edu.ibmec.cloud.ecommerce_cloud.model.Usuario;
-import br.edu.ibmec.cloud.ecommerce_cloud.repository.UsuarioRepository;
-
+import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/users")
 @RestController
+@RequestMapping("/users")
 public class UsuarioController {
 
     @Autowired
-    private UsuarioRepository userRepository;
+    private UsuarioRepository repository;
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
-
-    @Autowired
-    private CartaoRepository cartaoRepository;
-
+    @GetMapping
+    public ResponseEntity<List<Usuario>> getUsers() {
+        List<Usuario> response = repository.findAll();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @GetMapping("{id}")
-    public ResponseEntity<Usuario> getUser(@PathVariable("id") int id) {
-        Optional<Usuario> response = userRepository.findById(id);
-
+    public ResponseEntity<Usuario> getById(@PathVariable Integer id) {
+        Optional<Usuario> response = this.repository.findById(id);
         if (response.isEmpty())
-            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+        return new ResponseEntity<>(response.get() ,HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario user) {
-        this.userRepository.save(user);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario){
+        this.repository.save(usuario);
+        return new ResponseEntity<>(usuario ,HttpStatus.CREATED);
     }
 
-    @PostMapping("{id}/address")
-    public ResponseEntity<Usuario> associateAddress(@PathVariable("id") int id,
-                                                    @RequestBody Endereco endereco) {
-        Optional<Usuario> response = userRepository.findById(id);
-
+    @DeleteMapping("{id}")
+    public ResponseEntity<Usuario> delete(@PathVariable Integer id) {
+        Optional<Usuario> response = this.repository.findById(id);
         if (response.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        //Cria o endereço na base de dados
-        this.enderecoRepository.save(endereco);
+        //Exclui o usuario da base
+        this.repository.delete(response.get());
 
-        //Associa o endereço ao usuario
-        Usuario usuario = response.get();
-        usuario.getEnderecos().add(endereco);
-        this.userRepository.save(usuario);
-
-        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
-
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("{id}/credit-card")
-    public ResponseEntity<Usuario> associateCreditCard(@PathVariable("id") int id,
-                                                       @RequestBody Cartao cartao) {
-        Optional<Usuario> response = userRepository.findById(id);
 
-        if (response.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        //Cria o cartao na base de dados
-        this.cartaoRepository.save(cartao);
-
-        //Associa o cartao ao usuario
-        Usuario usuario = response.get();
-        usuario.getCartoes().add(cartao);
-        this.userRepository.save(usuario);
-
-        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
-
-    }
 
 }

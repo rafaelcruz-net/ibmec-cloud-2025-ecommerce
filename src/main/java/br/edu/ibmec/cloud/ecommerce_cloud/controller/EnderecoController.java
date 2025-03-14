@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/address/{id_user}")
+@RequestMapping("/users/{id_user}/address")
 public class EnderecoController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class EnderecoController {
     private UsuarioRepository usuarioRepository;
 
     @PostMapping
-    public ResponseEntity<Endereco> create(@PathVariable("id_user") int id_user, @RequestBody Endereco endereco) {
+    public ResponseEntity<Usuario> create(@PathVariable("id_user") int id_user, @RequestBody Endereco endereco) {
         //Verificando se o usuario existe na base
         Optional<Usuario> optionalUsuario = this.usuarioRepository.findById(id_user);
 
@@ -40,7 +40,7 @@ public class EnderecoController {
         usuario.getEnderecos().add(endereco);
         usuarioRepository.save(usuario);
 
-        return new ResponseEntity<>(endereco, HttpStatus.CREATED);
+        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
 
     }
 

@@ -74,6 +74,7 @@ public class CartaoController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
+
         //Verifica se o cartao não está expirado
         if (cartaoCompra.getDtExpiracao().isBefore(LocalDateTime.now())) {
             TransacaoResponse response = new TransacaoResponse();

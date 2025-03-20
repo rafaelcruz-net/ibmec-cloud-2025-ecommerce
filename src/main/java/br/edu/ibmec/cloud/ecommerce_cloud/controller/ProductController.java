@@ -1,5 +1,6 @@
 package br.edu.ibmec.cloud.ecommerce_cloud.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,7 +53,9 @@ public class ProductController {
 
     @GetMapping()
     public ResponseEntity<Iterable<Product>> getAll() {
-        return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
+        List<Product> result = new ArrayList<>();
+        repository.findAll().forEach(result::add);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 

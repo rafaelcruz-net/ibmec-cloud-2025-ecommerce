@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class EcommerceCloudApplication {
 
 	public static void main(String[] args) {
-		//Desliga a validação do certificado
-		System.setProperty("javax.net.ssl.trustStore", "NULL");
-		System.setProperty("javax.net.ssl.trustStoreType", "Windows-ROOT");
 		SpringApplication.run(EcommerceCloudApplication.class, args);
 	}
 

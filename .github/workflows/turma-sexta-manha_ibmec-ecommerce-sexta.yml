@@ -21,8 +21,8 @@ jobs:
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
-          java-version: 'java21'
-          distribution: 'microsoft'
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Build with Maven
         run: mvn clean install

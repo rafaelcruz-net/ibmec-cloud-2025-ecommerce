@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
+from botbuilder.core import CardFactory
+
 from botbuilder.dialogs import (
     ComponentDialog,
     WaterfallDialog,
@@ -16,8 +18,15 @@ from botbuilder.dialogs.prompts import (
     PromptOptions,
     PromptValidatorContext,
 )
+from botbuilder.schema import (
+    ActionTypes,
+    HeroCard,
+    CardAction,
+    CardImage,
+)
 from botbuilder.dialogs.choices import Choice
 from botbuilder.core import MessageFactory, UserState
+from api.product_api import ProductAPI
 
 
 class UserProfileDialog(ComponentDialog):
@@ -61,8 +70,33 @@ class UserProfileDialog(ComponentDialog):
         if choice == "Consultar Pedidos":
             await step_context.context.send_activity(f"Voce escolheu pedido.")
         elif choice == "Consultar Produtos":
-            await step_context.context.send_activity("Voce escolheu produtos")
+            await self.show_card_produto(step_context.context)
         elif choice == "Extrato de Compras":
             await step_context.context.send_activity("Voce escolheu extrato de compras")
         
         return await step_context.end_dialog()
+    
+    async def show_card_produto(self ,turn_context):
+        
+        produto_api = ProductAPI()
+
+        response = produto_api.consultar_api()
+        print(response)
+
+        #Chamada de API para obter os produtos
+        card = CardFactory.hero_card(
+            HeroCard(
+                title=response["productName"],
+                text=f"Preço: R$ {response['price']}",
+                subtitle=response["productDescription"],
+                images=[CardImage(url=response["imageUrl"][0])],
+                buttons=[
+                    CardAction(
+                        type=ActionTypes.im_back,
+                        title="Comprar Produto",
+                        value=response["id"],
+                    ),
+                ],
+            )
+        )
+        await turn_context.send_activity(MessageFactory.attachment(card))

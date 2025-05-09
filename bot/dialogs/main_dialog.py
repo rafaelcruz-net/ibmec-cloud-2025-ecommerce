@@ -20,6 +20,16 @@ from botbuilder.dialogs.choices import Choice
 from botbuilder.core import MessageFactory, UserState
 
 from data_models.user_profile import UserProfile
+from api.product_api import ProductAPI
+from botbuilder.schema import (
+    ActionTypes,
+    HeroCard,
+    CardAction,
+    CardImage,
+)
+
+from botbuilder.core import CardFactory
+
 
 
 class MainDialog(ComponentDialog):
@@ -63,9 +73,7 @@ class MainDialog(ComponentDialog):
                 MessageFactory.text("Você escolheu a opção de Consultar Pedidos.")
             )
         elif option == "Consultar Produtos":
-            await step_context.context.send_activity(
-                MessageFactory.text("Você escolheu a opção de Consultar Produtos.")
-            )
+            await self.show_card_produtos(step_context.context)
         elif option == "Extrato de Compras":
             await step_context.context.send_activity(
                 MessageFactory.text("Você escolheu a opção de Extrato de Compras.")
@@ -74,23 +82,28 @@ class MainDialog(ComponentDialog):
         return await step_context.end_dialog()
     
 
-        if not prompt_context.recognized.succeeded:
-            await prompt_context.context.send_activity(
-                "No attachments received. Proceeding without a profile picture..."
+    async def show_card_produtos(self, turn_context):
+        produto_api = ProductAPI()
+
+        response = produto_api.get_products()
+
+        #Montando o card
+        card = CardFactory.hero_card(
+            HeroCard(
+                title=response["productName"],
+                text=f"Preço: R$ {response['price']}",
+                subtitle=response["productDescription"],
+                images=[CardImage(url=produto) for produto in response["imageUrl"]],
+                buttons=[
+                    CardAction(
+                        type=ActionTypes.im_back,
+                        title=f"Comprar {response["productName"]}",
+                        value=response["id"],
+                    )
+                ],
             )
+        )
 
-            # We can return true from a validator function even if recognized.succeeded is false.
-            return True
+        return await turn_context.send_activity(MessageFactory.attachment(card))    
 
-        attachments = prompt_context.recognized.value
-
-        valid_images = [
-            attachment
-            for attachment in attachments
-            if attachment.content_type in ["image/jpeg", "image/png"]
-        ]
-
-        prompt_context.recognized.value = valid_images
-
-        # If none of the attachments are valid images, the retry prompt should be sent.
-        return len(valid_images) > 0
+       

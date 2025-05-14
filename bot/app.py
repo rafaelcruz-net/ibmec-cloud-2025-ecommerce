@@ -18,10 +18,9 @@ from botbuilder.core import (
 from botbuilder.core.integration import aiohttp_error_middleware
 from botbuilder.schema import Activity, ActivityTypes
 
-from bot import MyBot
 from config import DefaultConfig
-from dialogs.dialog_bot import DialogBot
-from dialogs.user_dialog_bot import UserProfileDialog
+from bots.dialog_bot import DialogBot
+from dialogs.main_dialog import MainDialog
 
 CONFIG = DefaultConfig()
 
@@ -29,9 +28,6 @@ CONFIG = DefaultConfig()
 # See https://aka.ms/about-bot-adapter to learn more about how bots work.
 SETTINGS = BotFrameworkAdapterSettings(CONFIG.APP_ID, CONFIG.APP_PASSWORD)
 ADAPTER = BotFrameworkAdapter(SETTINGS)
-MEMORY = MemoryStorage()
-CONVERSATION_STATE = ConversationState(MEMORY)
-USER_STATE = UserState(MEMORY)
 
 # Create MemoryStorage, UserState and ConversationState
 MEMORY = MemoryStorage()
@@ -39,7 +35,7 @@ CONVERSATION_STATE = ConversationState(MEMORY)
 USER_STATE = UserState(MEMORY)
 
 # create main dialog and bot
-DIALOG = UserProfileDialog(USER_STATE)
+DIALOG = MainDialog(USER_STATE)
 BOT = DialogBot(CONVERSATION_STATE, USER_STATE, DIALOG)
 
 # Catch-all for errors.

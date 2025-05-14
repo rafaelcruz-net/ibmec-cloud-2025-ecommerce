@@ -1,6 +1,3 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-
 from botbuilder.core import CardFactory
 
 from botbuilder.dialogs import (
@@ -27,14 +24,19 @@ from botbuilder.schema import (
 from botbuilder.dialogs.choices import Choice
 from botbuilder.core import MessageFactory, UserState
 from api.product_api import ProductAPI
+from dialogs.consultar_pedido_dialog import ConsultarPedidoDialog
+from dialogs.consultar_produtos_dialog import ConsultarProdutoDialog
+from dialogs.extrato_compra_dialog import ExtratoCompraDialog
 
 
-class UserProfileDialog(ComponentDialog):
+class MainDialog(ComponentDialog):
     def __init__(self, user_state: UserState):
-        super(UserProfileDialog, self).__init__(UserProfileDialog.__name__)
+        super(MainDialog, self).__init__(MainDialog.__name__)
 
         self.user_profile_accessor = user_state.create_property("UserProfile")
 
+        # Prompt para escolha de opções
+        # Tratamento das opções de escolha do usuário
         self.add_dialog(
             WaterfallDialog(
                 WaterfallDialog.__name__,
@@ -45,8 +47,21 @@ class UserProfileDialog(ComponentDialog):
             )
         )
 
+
+        #Area de atendimento de consultar pedidos  
+        self.add_dialog(ConsultarPedidoDialog())
+
+        #Area de atendimento de consultar produtos
+        self.add_dialog(ConsultarProdutoDialog())
+        
+        #Area de atendimento de extrato de compras
+        self.add_dialog(ExtratoCompraDialog())
+
+
+        #Prompt para escolha das opções
         self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
+        
 
         self.initial_dialog_id = WaterfallDialog.__name__
 
@@ -68,11 +83,11 @@ class UserProfileDialog(ComponentDialog):
         choice = step_context.result.value
         
         if choice == "Consultar Pedidos":
-            await step_context.context.send_activity(f"Voce escolheu pedido.")
+            await step_context.begin_dialog("ConsultarPedidoDialog")
         elif choice == "Consultar Produtos":
-            await self.show_card_produto(step_context.context)
+            await step_context.begin_dialog("ConsultarProdutoDialog")
         elif choice == "Extrato de Compras":
-            await step_context.context.send_activity("Voce escolheu extrato de compras")
+            await step_context.begin_dialog("ExtratoCompraDialog")
         
         return await step_context.end_dialog()
     

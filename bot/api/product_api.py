@@ -1,12 +1,11 @@
 
 import requests
 class ProductAPI:
-    def consultar_api(self):
+    def consultar_produtos(self, product_name):
         try:
-            response = requests.get("http://localhost:8080/products")
+            response = requests.get("http://localhost:8080/products/search", params={"productName": product_name})
             if (response.status_code == 200):
-                data = response.json()[0]
-                return data
+                return response.json()
         except Exception as e:
-            print(f"Deu ruim ao consultar a API de produtos {e}")
+            print(f"Não consegui consultar a API de Consulta de Produtos {e}")
 

@@ -31,22 +31,13 @@ from dialogs.extrato_compra_dialog import ExtratoCompraDialog
 
 class MainDialog(ComponentDialog):
     def __init__(self, user_state: UserState):
-        super(MainDialog, self).__init__(MainDialog.__name__)
+        super(MainDialog, self).__init__("MainDialog")
 
-        self.user_profile_accessor = user_state.create_property("UserProfile")
+        self.user_state = user_state
 
-        # Prompt para escolha de opções
-        # Tratamento das opções de escolha do usuário
-        self.add_dialog(
-            WaterfallDialog(
-                WaterfallDialog.__name__,
-                [
-                    self.prompt_option_step,
-                    self.process_option_step,
-                ],
-            )
-        )
-
+        #Prompt para escolha das opções
+        self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
+        self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
 
         #Area de atendimento de consultar pedidos  
         self.add_dialog(ConsultarPedidoDialog())
@@ -57,13 +48,20 @@ class MainDialog(ComponentDialog):
         #Area de atendimento de extrato de compras
         self.add_dialog(ExtratoCompraDialog())
 
+        # Prompt para escolha de opções
+        # Tratamento das opções de escolha do usuário
+        self.add_dialog(
+            WaterfallDialog(
+                "MainDialog",
+                [
+                    self.prompt_option_step,
+                    self.process_option_step,
+                ],
+            )
+        )
 
-        #Prompt para escolha das opções
-        self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
-        self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
-        
 
-        self.initial_dialog_id = WaterfallDialog.__name__
+        self.initial_dialog_id = "MainDialog"
 
     async def prompt_option_step(
         self, step_context: WaterfallStepContext
@@ -83,11 +81,11 @@ class MainDialog(ComponentDialog):
         choice = step_context.result.value
         
         if choice == "Consultar Pedidos":
-            await step_context.begin_dialog("ConsultarPedidoDialog")
+            return await step_context.begin_dialog("ConsultarPedidoDialog")
         elif choice == "Consultar Produtos":
-            await step_context.begin_dialog("ConsultarProdutoDialog")
+            return await step_context.begin_dialog("ConsultarProdutoDialog")
         elif choice == "Extrato de Compras":
-            await step_context.begin_dialog("ExtratoCompraDialog")
+            return await step_context.begin_dialog("ExtratoCompraDialog")
         
         return await step_context.end_dialog()
     

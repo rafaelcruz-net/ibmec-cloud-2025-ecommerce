@@ -7,11 +7,11 @@ class ConsultarProdutoDialog(ComponentDialog):
     def __init__(self):
         super(ConsultarProdutoDialog, self).__init__("ConsultarProdutoDialog")
 
-        self.add_dialog(TextPrompt("namePrompt"))
+        self.add_dialog(TextPrompt(TextPrompt.__name__))
 
         self.add_dialog(
             WaterfallDialog(
-                "ConsultarProdutoWaterfallDialog",
+                "consultarProdutoWaterfallDialog",
                 [
                     self.product_name_step,
                     self.prompt_process_product_name_step,
@@ -20,16 +20,18 @@ class ConsultarProdutoDialog(ComponentDialog):
         )
 
 
-        self.initial_dialog_id = "ConsultarProdutoWaterfallDialog"
+        self.initial_dialog_id = "consultarProdutoWaterfallDialog"
 
     async def product_name_step(self, step_context: WaterfallStepContext) :
                 
         prompt_message = MessageFactory.text("Por favor, digite o nome do produto que você deseja consultar.")
         
-        return await step_context.prompt(
-            "namePrompt",
-            PromptOptions(prompt=MessageFactory.text("Digite seu nome:"))
+        prompt_option = PromptOptions(
+            prompt=prompt_message,
+            retry_prompt=MessageFactory.text("Desculpe, não consegui entender. Por favor, digite o nome do produto novamente."),
         )
+
+        return await step_context.prompt(TextPrompt.__name__, prompt_option)
     
     async def prompt_process_product_name_step(self, step_context: WaterfallStepContext) :
         product_name = step_context.result

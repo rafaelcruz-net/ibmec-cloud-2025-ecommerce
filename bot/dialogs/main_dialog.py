@@ -29,14 +29,25 @@ from botbuilder.schema import (
 )
 
 from botbuilder.core import CardFactory
-
+from dialogs.consultar_produtos_dialog import ConsultarProdutosDialog
+from dialogs.consultar_pedidos_dialog import ConsultarPedidosDialog
+from dialogs.extrato_compra_dialog import ExtratoCompraDialog
 
 
 class MainDialog(ComponentDialog):
     def __init__(self, user_state: UserState):
         super(MainDialog, self).__init__(MainDialog.__name__)
 
-        self.user_profile_accessor = user_state.create_property("MainProfile")
+        self.user_state = user_state
+
+        #Area de atendimento de consultar produtos
+        self.add_dialog(ConsultarProdutosDialog())
+
+        #Area de atendimento de consultar pedidos
+        self.add_dialog(ConsultarPedidosDialog())
+
+        #Area de atendimento de extrato de compras
+        self.add_dialog(ExtratoCompraDialog())
 
         self.add_dialog(
             WaterfallDialog(
@@ -69,16 +80,15 @@ class MainDialog(ComponentDialog):
         option = step_context.result.value
 
         if option == "Consultar Pedidos":
-            await step_context.context.send_activity(
-                MessageFactory.text("Você escolheu a opção de Consultar Pedidos.")
-            )
+            #Iniciando um novo dialog para consultar pedidos
+            return await step_context.begin_dialog("ConsultarPedidosDialog")
         elif option == "Consultar Produtos":
-            await self.show_card_produtos(step_context.context)
+            #Iniciando um novo dialog para consultar produtos
+            return await step_context.begin_dialog("ConsultarProdutosDialog")
         elif option == "Extrato de Compras":
-            await step_context.context.send_activity(
-                MessageFactory.text("Você escolheu a opção de Extrato de Compras.")
-            )            
-        
+            #Iniciando um novo dialog para Extrato de Compras
+            return await step_context.begin_dialog("ExtratoCompraDialog")
+
         return await step_context.end_dialog()
     
 

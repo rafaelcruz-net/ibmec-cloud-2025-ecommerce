@@ -40,3 +40,11 @@ class DialogBot(ActivityHandler):
             turn_context,
             self.conversation_state.create_property("DialogState"),
         )
+
+    async def on_members_added_activity(self, members_added, turn_context: TurnContext):
+        for member in members_added:
+            if member.id != turn_context.activity.recipient.id:
+                await turn_context.send_activity(
+                    f"Seja bem-vindo(a) ao bot de atendimento do IBMEC MALL! " 
+                    f"Digite uma mensagem para iniciar o atendimento."
+                )

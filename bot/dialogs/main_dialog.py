@@ -41,7 +41,7 @@ class MainDialog(ComponentDialog):
         self.user_state = user_state
 
         #Area de atendimento de consultar produtos
-        self.add_dialog(ConsultarProdutosDialog())
+        self.add_dialog(ConsultarProdutosDialog(user_state))
 
         #Area de atendimento de consultar pedidos
         self.add_dialog(ConsultarPedidosDialog())
@@ -91,29 +91,5 @@ class MainDialog(ComponentDialog):
 
         return await step_context.end_dialog()
     
-
-    async def show_card_produtos(self, turn_context):
-        produto_api = ProductAPI()
-
-        response = produto_api.get_products()
-
-        #Montando o card
-        card = CardFactory.hero_card(
-            HeroCard(
-                title=response["productName"],
-                text=f"Preço: R$ {response['price']}",
-                subtitle=response["productDescription"],
-                images=[CardImage(url=produto) for produto in response["imageUrl"]],
-                buttons=[
-                    CardAction(
-                        type=ActionTypes.im_back,
-                        title=f"Comprar {response["productName"]}",
-                        value=response["id"],
-                    )
-                ],
-            )
-        )
-
-        return await turn_context.send_activity(MessageFactory.attachment(card))    
 
        

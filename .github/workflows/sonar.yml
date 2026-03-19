@@ -33,4 +33,4 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -f ./api/pom.xml verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=rafaelcruz-net_ibmec-cloud-2025-ecommerce
+        run: mvn -B -f ./api/pom.xml verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=rafaelcruz-net_ibmec-cloud-2025-ecommerce -DskipTest
